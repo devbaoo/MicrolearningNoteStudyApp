@@ -1,0 +1,48 @@
+# .NET build artifacts
+bin/
+obj/
+out/
+
+# Visual Studio files
+.vs/
+*.sln
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local development settings
+*.local.json
+
+# Logs
+*.log
+
+# NuGet Packages
+*.nupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
+
+# Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/ 

@@ -1,0 +1,94 @@
+name: Deploy .NET Lambda Functions
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'backend/**/*.cs'
+      - 'backend/**/*.csproj'
+      - 'backend/**/aws-lambda-tools-defaults.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: [ap-southeast-1]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Amazon.Lambda.Tools
+        run: dotnet tool install -g Amazon.Lambda.Tools
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.region }}
+          audience: sts.amazonaws.com
+
+      - name: Get changed Lambda projects
+        id: changed-lambda-projects
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            backend/*Function/**/*.cs
+            backend/*Function/**/*.csproj
+            backend/*Function/**/aws-lambda-tools-defaults.json
+          separator: " " # Use space separator for bash loop
+
+      - name: Deploy Lambda functions
+        shell: bash
+        run: |
+          pwd
+          echo "Current directory contents:"
+          ls -la
+          
+          # Get changed files from the previous step
+          CHANGED_FILES="${{ steps.changed-lambda-projects.outputs.all_changed_files }}"
+
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No Lambda project files changed in backend. Skipping deployment."
+            exit 0
+          fi
+
+          echo "Changed files to process: $CHANGED_FILES"
+          
+          # Extract unique Lambda function project directories
+          LAMBDA_DIRS=()
+          for file_path in $CHANGED_FILES; do
+            # Extract the Lambda function directory (e.g., backend/NoteManagementFunction)
+            lambda_dir=$(echo "$file_path" | grep -o 'backend/[^/]*Function' | sort -u)
+            
+            if [[ ! " ${LAMBDA_DIRS[@]} " =~ " $lambda_dir " ]] && [[ ! -z "$lambda_dir" ]]; then
+              LAMBDA_DIRS+=("$lambda_dir")
+              echo "Found Lambda project directory: $lambda_dir"
+            fi
+          done
+          
+          # Process each Lambda function project
+          for lambda_dir in "${LAMBDA_DIRS[@]}"; do
+            echo "Processing Lambda project: $lambda_dir"
+            
+            # Extract function name from directory (e.g., NoteManagementFunction from backend/NoteManagementFunction)
+            function_name=$(basename "$lambda_dir")
+            echo "Function name: $function_name"
+            
+            # Build and deploy the Lambda function
+            echo "Building and deploying $function_name to ${{ matrix.region }}"
+            if ! (cd "$lambda_dir" && dotnet lambda deploy-function "$function_name" --region ${{ matrix.region }}); then
+              echo "Failed to deploy function code for $function_name"
+              exit 1
+            fi
+            
+            echo "Successfully deployed $function_name"
+          done
+          
+          echo "Deployment process finished for changed Lambda projects." 
