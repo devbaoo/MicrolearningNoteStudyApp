@@ -5,6 +5,6 @@
     "function-runtime": "dotnet8",
     "function-memory-size": 256,
     "function-timeout": 30,
-    "function-handler": "NoteManagementFunction::NoteManagementFunction.Function::FunctionHandler"
+    "function-handler": "UserManagementFunction::UserManagementFunction.Function::FunctionHandler"
   }
   

@@ -6,7 +6,7 @@
     "To deploy from the command line run: dotnet lambda deploy-function",
     "To view the status run: dotnet lambda get-function-config"
   ],
-  "profile": "",
+  "profile": "default",
   "region": "ap-southeast-1",
   "configuration": "Release",
   "framework": "net8.0",

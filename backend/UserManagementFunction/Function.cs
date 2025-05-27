@@ -10,6 +10,7 @@ using System.Net;
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace UserManagementFunction;
+//test
 
 public class Function
 {
@@ -33,6 +34,11 @@ public class Function
         
         try
         {
+            //test
+            // Extract the path and method for easier routing
+            var path = request.RawPath.ToLower();
+            var method = request.RequestContext.Http.Method.ToUpper();
+
             // Route the request based on HTTP method and path
             return request.RequestContext.Http.Method.ToUpper() switch
             {

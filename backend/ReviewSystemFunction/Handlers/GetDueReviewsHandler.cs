@@ -118,7 +118,7 @@ namespace ReviewSystemFunction.Handlers
                 Body = JsonConvert.SerializeObject(new ApiResponse<object>
                 {
                     Success = false,
-                    Error = message,
+                    Message = message,
                     Timestamp = DateTime.UtcNow
                 })
             };
