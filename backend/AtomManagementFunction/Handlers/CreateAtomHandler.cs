@@ -6,7 +6,7 @@ using NeuroBrain.Common.Requests;
 using NeuroBrain.Common.Responses;
 using Common.Responses;
 
-namespace NeuroBrain.NoteManagementFunction.Handlers
+namespace NeuroBrain.AtomManagementFunction.Handlers
 {
     
 } 
