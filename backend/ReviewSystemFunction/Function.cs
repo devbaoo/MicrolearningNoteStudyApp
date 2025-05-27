@@ -35,26 +35,39 @@ namespace ReviewSystemFunction
             _getDueReviewsHandler = new GetDueReviewsHandler(_reviewService);
         }
 
-        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             try
             {
-                context.Logger.LogInformation($"Processing {request.HttpMethod} {request.Path}");
+                var method = request.RequestContext.Http.Method.ToUpper();
+                var path = request.RequestContext.Http.Path;
+
+                context.Logger.LogInformation($"Processing {method} {path}");
 
                 // Route based on HTTP method and path
-                return (request.HttpMethod.ToUpper(), request.Path?.ToLower()) switch
+                return method switch
                 {
-                    ("GET", "/reviews/due") => await _getDueReviewsHandler.HandleAsync(request, context),
-                    
-                    ("OPTIONS", _) => CreateCorsResponse(),
-                    
-                    _ => CreateNotFoundResponse()
+                    /* ("GET", "/reviews/due") => await _getDueReviewsHandler.HandleAsync(request, context),
+
+                    ("OPTIONS", _) => CreateCorsResponse(),*/
+
+                    _ => new APIGatewayHttpApiV2ProxyResponse
+                    {
+                        StatusCode = 404,
+                        Body = JsonConvert.SerializeObject(new { message = "Endpoint not found" }),
+                        Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                    }
                 };
             }
             catch (Exception ex)
             {
                 context.Logger.LogError($"Unhandled exception: {ex}");
-                return CreateErrorResponse(500, "Internal server error");
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
+                    StatusCode = 500,
+                    Body = JsonConvert.SerializeObject(new { message = "Internal server error", error = ex.Message }),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
             }
         }
 

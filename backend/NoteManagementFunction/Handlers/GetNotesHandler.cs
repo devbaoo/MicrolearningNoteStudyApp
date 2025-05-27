@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
-using Newtonsoft.Json;
+using Common.Responses;
 using NeuroBrain.Common.Requests;
 using NeuroBrain.Common.Responses;
 using NeuroBrain.NoteManagementFunction.Services;
-using Common.Responses;
+using Newtonsoft.Json;
 
 namespace NeuroBrain.NoteManagementFunction.Handlers
 {
@@ -29,10 +27,28 @@ namespace NeuroBrain.NoteManagementFunction.Handlers
                     bool.TryParse(request.QueryStringParameters["includeArchived"], out var includeArchived);
 
                 if (request.QueryStringParameters.ContainsKey("page"))
-                    int.TryParse(request.QueryStringParameters["page"], out getRequest.Page);
+                {
+                    if (int.TryParse(request.QueryStringParameters["page"], out var page))
+                    {
+                        getRequest.Page = page;
+                    }
+                    else
+                    {
+                        getRequest.Page = 1; // Default page if parsing fails
+                    }
+                }
 
                 if (request.QueryStringParameters.ContainsKey("pageSize"))
-                    int.TryParse(request.QueryStringParameters["pageSize"], out getRequest.PageSize);
+                {
+                    if (int.TryParse(request.QueryStringParameters["pageSize"], out var pageSize))
+                    {
+                        getRequest.PageSize = pageSize;
+                    }
+                    else
+                    {
+                        getRequest.PageSize = 20; // Default page size if parsing fails
+                    }
+                }
 
                 if (request.QueryStringParameters.ContainsKey("sortBy"))
                     getRequest.SortBy = request.QueryStringParameters["sortBy"];
@@ -59,4 +75,4 @@ namespace NeuroBrain.NoteManagementFunction.Handlers
             };
         }
     }
-} 
+}

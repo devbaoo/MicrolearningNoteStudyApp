@@ -3,7 +3,7 @@ using Amazon.Lambda.TestUtilities;
 using Amazon.Lambda.APIGatewayEvents;
 using System.Text.Json;
 
-namespace NoteManagementFunction.Tests;
+namespace NeuroBrain.NoteManagementFunction.Tests;
 
 public class FunctionTests
 {
