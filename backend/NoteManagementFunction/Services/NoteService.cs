@@ -38,7 +38,7 @@ namespace NeuroBrain.NoteManagementFunction.Services
             return MapToResponse(createdNote);
         }
 
-        public async Task<NoteResponse> GetNoteByIdAsync(string noteId, string userId)
+        public async Task<NoteResponse?> GetNoteByIdAsync(string noteId, string userId)
         {
             var note = await _noteRepository.GetByIdAsync(noteId, userId);
             return note != null ? MapToResponse(note) : null;

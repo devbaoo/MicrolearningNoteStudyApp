@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NeuroBrain.Common.Requests;
 using NeuroBrain.Common.Responses;
 using NeuroBrain.NoteManagementFunction.Services;
+using Common.Responses;
 
 namespace NeuroBrain.NoteManagementFunction.Handlers
 {
