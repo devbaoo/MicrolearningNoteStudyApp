@@ -1,6 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\backend",
+    "\\backend\\AtomManagementFunction",
+    "\\backend\\AtomManagementFunction\\Handlers",
+    "\\backend\\AtomManagementFunction\\Properties",
+    "\\backend\\AtomManagementFunction\\Services"
   ],
+  "SelectedNode": "\\frontend",
   "PreviewInSolutionExplorer": false
 }
