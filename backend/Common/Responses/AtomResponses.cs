@@ -10,17 +10,16 @@ public class AtomResponses
         public string UserId { get; set; }
         public string Content { get; set; }
         public string Type { get; set; }
-        public string? SourceNoteId { get; set; }
         public decimal? ImportanceScore { get; set; }
         public decimal? DifficultyScore { get; set; }
-        public decimal? MasteryLevel { get; set; }
-        public byte[] EmbeddingVector { get; set; }
-        public int AccessCount { get; set; }
+        public int CurrentInterval { get; set; }
+        public decimal EaseFactor { get; set; }
+        public int ReviewCount { get; set; } = 0;
+        public string NextReviewDate { get; set; }
+        public string LastReviewDate { get; set; }
         public List<string> Tags { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public DateTime? LastAccessed { get; set; }
-        public bool IsMannuallyCreated { get; set; }
     }
 
     public class AtomListResponse

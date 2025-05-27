@@ -7,21 +7,17 @@ public class AtomRequests
     public class CreateAtomRequest
     {
         [Required]
-        [StringLength(200)]
-        public string Title { get; set; }
-
-        [Required]
         public string Content { get; set; }
 
         public string Type { get; set; } = "concept";
         public decimal? ImportanceScore { get; set; } = 0.5m;
         public decimal? DifficultyScore { get; set; } = 0.5m;
+        public int CurrentInterval { get; set; } = 1;
+        public decimal EaseFactor { get; set; } = 2.5m;
+        public int ReviewCount { get; set; } = 0;
+        public string NextReviewDate { get; set; }
+        public string LastReviewDate { get; set; }
         public HashSet<string> Tags { get; set; } = new HashSet<string>();
-        public string? SourceNoteId { get; set; }
-        public byte[]? EmbeddingVector { get; set; } = null;
-        public bool IsMannuallyCreated { get; set; } = false;
-        public decimal? MasteryLevel { get; set; } = 0;
-        public int AccessCount { get; set; } = 0;
     }
 
     public class UpdateAtomRequest
@@ -32,12 +28,13 @@ public class AtomRequests
         public string Content { get; set; }
 
         public string Type { get; set; }
-
-        public string? SourceNoteId { get; set; }
+        public int CurrentInterval { get; set; } = 1;
+        public decimal EaseFactor { get; set; } = 2.5m;
+        public int ReviewCount { get; set; } = 0;
+        public string? NextReviewDate { get; set; }
+        public string? LastReviewDate { get; set; }
         public decimal? ImportanceScore { get; set; } = 0.5m;
         public decimal? DifficultyScore { get; set; } = 0.5m;
-        public decimal? MasteryLevel { get; set; } = 0;
-        public byte[] EmbeddingVector { get; set; } = Array.Empty<byte>();
         public List<string> Tags { get; set; }
     }
 

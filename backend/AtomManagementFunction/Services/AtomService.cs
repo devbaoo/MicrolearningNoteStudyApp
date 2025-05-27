@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common.Models;
 using Common.Repositories;
-using Common.Responses;
-using NeuroBrain.Common.Models;
-using NeuroBrain.Common.Repositories;
-using NeuroBrain.Common.Requests;
-using NeuroBrain.Common.Responses;
 using static Common.Requests.AtomRequests;
 using static Common.Responses.AtomResponses;
 
@@ -33,12 +24,11 @@ namespace NeuroBrain.AtomManagementFunction.Services
                 ImportanceScore = request.ImportanceScore,
                 DifficultyScore = request.DifficultyScore,
                 Tags = request.Tags?.ToHashSet() ?? new HashSet<string>(),
-                SourceNoteId = request.SourceNoteId,
-                EmbeddingVector = request.EmbeddingVector ?? Array.Empty<byte>(),
-                IsMannuallyCreated = request.IsMannuallyCreated,
-                CreatedAt = DateTime.Now,
-                MasteryLevel = request.MasteryLevel,
-                AccessCount = request.AccessCount
+                CurrentInterval = request.CurrentInterval,
+                EaseFactor = request.EaseFactor,
+                ReviewCount = request.ReviewCount,
+                NextReviewDate = request.NextReviewDate,
+                LastReviewDate = request.LastReviewDate
             };
 
             var createdAtom = await _atomRepository.CreateAsync(atom);
@@ -83,12 +73,14 @@ namespace NeuroBrain.AtomManagementFunction.Services
             existingAtom.Content = request.Content ?? existingAtom.Content;
             existingAtom.Type = request.Type ?? existingAtom.Type;
             existingAtom.Tags = request.Tags?.ToHashSet() ?? existingAtom.Tags;
-            existingAtom.SourceNoteId = request.SourceNoteId ?? existingAtom.SourceNoteId;
             existingAtom.ImportanceScore = request.ImportanceScore ?? existingAtom.ImportanceScore;
             existingAtom.DifficultyScore = request.DifficultyScore ?? existingAtom.DifficultyScore;
-            existingAtom.MasteryLevel = request.MasteryLevel ?? existingAtom.MasteryLevel;
-            existingAtom.EmbeddingVector = request.EmbeddingVector ?? existingAtom.EmbeddingVector;
             existingAtom.UpdatedAt = DateTime.Now;
+            existingAtom.CurrentInterval = request.CurrentInterval;
+            existingAtom.EaseFactor = request.EaseFactor;
+            /*       existingAtom.ReviewCount = request.ReviewCount;*/
+            existingAtom.NextReviewDate = request.NextReviewDate ?? existingAtom.NextReviewDate;
+            existingAtom.LastReviewDate = request.LastReviewDate ?? existingAtom.LastReviewDate;
 
             var updatedAtom = await _atomRepository.UpdateAsync(existingAtom);
             return MapToResponse(updatedAtom);
@@ -149,17 +141,16 @@ namespace NeuroBrain.AtomManagementFunction.Services
                 UserId = atom.UserId,
                 Content = atom.Content,
                 Type = atom.Type,
-                SourceNoteId = atom.SourceNoteId,
                 ImportanceScore = atom.ImportanceScore,
                 DifficultyScore = atom.DifficultyScore,
-                MasteryLevel = atom.MasteryLevel,
-                EmbeddingVector = atom.EmbeddingVector,
-                AccessCount = atom.AccessCount,
+                CurrentInterval = atom.CurrentInterval,
+                EaseFactor = atom.EaseFactor,
+                ReviewCount = atom.ReviewCount,
+                NextReviewDate = atom.NextReviewDate,
+                LastReviewDate = atom.LastReviewDate,
                 Tags = atom.Tags.ToList(),
                 CreatedAt = atom.CreatedAt,
                 UpdatedAt = atom.UpdatedAt,
-                LastAccessed = atom.LastAccessed,
-                IsMannuallyCreated = atom.IsMannuallyCreated
             };
         }
     }
