@@ -1,12 +1,8 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Common.Models;
 using Common.Responses;
 using Newtonsoft.Json;
 using ReviewSystemFunction.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ReviewSystemFunction.Handlers
 {
@@ -19,65 +15,76 @@ namespace ReviewSystemFunction.Handlers
             _reviewService = reviewService;
         }
 
-        public async Task<APIGatewayProxyResponse> HandleAsync(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayHttpApiV2ProxyResponse> HandleAsync(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            try
+            context.Logger.LogInformation($"Starting GetDueReviews handler at {DateTime.UtcNow}");
+
+            // Extract and validate parameters - Handler responsibility
+            string? userId = null;
+            if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("user_id", out var userIdValue))
             {
-                context.Logger.LogInformation($"Starting GetDueReviews handler at {DateTime.UtcNow}");
+                userId = userIdValue;
+            }
 
-                // Extract and validate parameters - Handler responsibility
-                string userId = null;
-                if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("user_id", out var userIdValue))
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new APIGatewayHttpApiV2ProxyResponse
                 {
-                    userId = userIdValue;
-                }
-                
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return CreateErrorResponse(400, "user_id is required");
-                }
-
-                string limitStr = "50";
-                if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("limit", out var limitValue))
-                {
-                    limitStr = limitValue;
-                }
-                
-                if (!int.TryParse(limitStr, out var limit) || limit <= 0)
-                {
-                    limit = 50;
-                }
-
-                // Ensure reasonable limit
-                limit = Math.Min(limit, 100);
-
-                context.Logger.LogInformation($"Getting due atoms for user: {userId}, limit: {limit}");
-
-                // Delegate to service layer for business logic and data operations
-                var reviewData = await _reviewService.GetDueReviewsDataAsync(userId, limit, context);
-
-                // Prepare response - Handler responsibility
-                var response = new GetDueReviewsResponse
-                {
-                    DueAtoms = reviewData.SortedAtoms,
-                    TotalCount = reviewData.SortedAtoms.Count,
-                    ReviewLimitReached = reviewData.SortedAtoms.Count >= limit,
-                    EstimatedReviewTimeMinutes = reviewData.EstimatedTimeMinutes,
-                    NextReviewTime = reviewData.NextReviewTime
+                    StatusCode = 400,
+                    Body = JsonConvert.SerializeObject(new ApiResponse<GetDueReviewsResponse>
+                    {
+                        Success = false,
+                        Message = "Failed getting due review."
+                    }),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                 };
-
-                context.Logger.LogInformation($"Found {reviewData.SortedAtoms.Count} due atoms");
-
-                return CreateSuccessResponse(response);
             }
-            catch (Exception ex)
+
+            string limitStr = "50";
+            if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("limit", out var limitValue))
             {
-                context.Logger.LogError($"Error in GetDueReviews: {ex.Message}");
-                return CreateErrorResponse(500, "Failed to fetch due atoms");
+                limitStr = limitValue;
             }
+
+            if (!int.TryParse(limitStr, out var limit) || limit <= 0)
+            {
+                limit = 50;
+            }
+
+            // Ensure reasonable limit
+            limit = Math.Min(limit, 100);
+
+            context.Logger.LogInformation($"Getting due atoms for user: {userId}, limit: {limit}");
+
+            // Delegate to service layer for business logic and data operations
+            var reviewData = await _reviewService.GetDueReviewsDataAsync(userId, limit, context);
+
+            // Prepare response - Handler responsibility
+            var response = new GetDueReviewsResponse
+            {
+                DueAtoms = reviewData.SortedAtoms,
+                TotalCount = reviewData.SortedAtoms.Count,
+                ReviewLimitReached = reviewData.SortedAtoms.Count >= limit,
+                EstimatedReviewTimeMinutes = reviewData.EstimatedTimeMinutes,
+                NextReviewTime = reviewData.NextReviewTime
+            };
+
+            context.Logger.LogInformation($"Found {reviewData.SortedAtoms.Count} due atoms");
+
+            return new APIGatewayHttpApiV2ProxyResponse
+            {
+                StatusCode = 200,
+                Body = JsonConvert.SerializeObject(new ApiResponse<GetDueReviewsResponse>
+                {
+                    Success = true,
+                    Data = response,
+                    Message = "Notes retrieved successfully"
+                }),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+            };
         }
 
-        private APIGatewayProxyResponse CreateSuccessResponse(object data)
+/*        private APIGatewayProxyResponse CreateSuccessResponse(object data)
         {
             return new APIGatewayProxyResponse
             {
@@ -115,6 +122,6 @@ namespace ReviewSystemFunction.Handlers
                     Timestamp = DateTime.UtcNow
                 })
             };
-        }
+        }*/
     }
 }
