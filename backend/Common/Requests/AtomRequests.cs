@@ -60,10 +60,10 @@ public class AtomRequests
         public int PageSize { get; set; } = 20;
     }
 
-    public class ArchiveNoteRequest
+    public class ArchiveAtomRequest
     {
         [Required]
-        public string NoteId { get; set; }
+        public string AtomId { get; set; }
 
         public bool Archive { get; set; } = true;
     }
