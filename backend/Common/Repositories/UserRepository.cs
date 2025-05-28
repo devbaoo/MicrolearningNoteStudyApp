@@ -54,22 +54,19 @@ public class UserRepository : IUserRepository
         {
             user.UserId = Guid.NewGuid().ToString();
         }
-        
-        user.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var item = new Dictionary<string, AttributeValue>
         {
             ["UserId"] = new AttributeValue { S = user.UserId },
             ["Email"] = new AttributeValue { S = user.Email },
-            ["Username"] = new AttributeValue { S = user.Username },
-            ["CreatedAt"] = new AttributeValue { S = user.CreatedAt.ToString("yyyy-MM-dd") },
-            ["IsActive"] = new AttributeValue { BOOL = user.IsActive }
+            ["FirstName"] = new AttributeValue { S = user.FirstName },
+            ["LastName"] = new AttributeValue { S = user.LastName },
+            ["CreatedAt"] = new AttributeValue { S = user.CreatedAt.ToString("o") },
+            ["LastLogin"] = new AttributeValue { S = user.LastLogin.ToString("o") },
+            ["IsVerified"] = new AttributeValue { BOOL = user.IsVerified },
+            ["SubscriptionTier"] = new AttributeValue { S = user.SubscriptionTier },
+            ["SubscriptionExpiry"] = new AttributeValue { S = user.SubscriptionExpiry.ToString("o") }
         };
-
-        if (!string.IsNullOrEmpty(user.Image))
-        {
-            item["Image"] = new AttributeValue { S = user.Image };
-        }
 
         var request = new PutItemRequest
         {
@@ -83,20 +80,20 @@ public class UserRepository : IUserRepository
 
     public async Task<User> UpdateAsync(User user)
     {
-        var updateExpression = "SET Email = :email, Username = :username, IsActive = :isActive";
+        var updateExpression = "SET Email = :email, FirstName = :firstName, LastName = :lastName, " +
+                              "IsVerified = :isVerified, SubscriptionTier = :subscriptionTier, " +
+                              "SubscriptionExpiry = :subscriptionExpiry, LastLogin = :lastLogin";
+                              
         var expressionAttributeValues = new Dictionary<string, AttributeValue>
         {
             [":email"] = new AttributeValue { S = user.Email },
-            [":username"] = new AttributeValue { S = user.Username },
-            [":isActive"] = new AttributeValue { BOOL = user.IsActive }
+            [":firstName"] = new AttributeValue { S = user.FirstName },
+            [":lastName"] = new AttributeValue { S = user.LastName },
+            [":isVerified"] = new AttributeValue { BOOL = user.IsVerified },
+            [":subscriptionTier"] = new AttributeValue { S = user.SubscriptionTier },
+            [":subscriptionExpiry"] = new AttributeValue { S = user.SubscriptionExpiry.ToString("o") },
+            [":lastLogin"] = new AttributeValue { S = user.LastLogin.ToString("o") }
         };
-
-        // Only include Image in the update if it's not empty
-        if (!string.IsNullOrEmpty(user.Image))
-        {
-            updateExpression += ", Image = :image";
-            expressionAttributeValues[":image"] = new AttributeValue { S = user.Image };
-        }
 
         var request = new UpdateItemRequest
         {
@@ -135,17 +132,26 @@ public class UserRepository : IUserRepository
         {
             UserId = item.ContainsKey("UserId") ? item["UserId"].S : string.Empty,
             Email = item.ContainsKey("Email") ? item["Email"].S : string.Empty,
-            Username = item.ContainsKey("Username") ? item["Username"].S : string.Empty,
-            IsActive = item.ContainsKey("IsActive") && item["IsActive"].BOOL,
-            Image = item.ContainsKey("Image") ? item["Image"].S : string.Empty
+            FirstName = item.ContainsKey("FirstName") ? item["FirstName"].S : string.Empty,
+            LastName = item.ContainsKey("LastName") ? item["LastName"].S : string.Empty,
+            IsVerified = item.ContainsKey("IsVerified") && item["IsVerified"].BOOL,
+            SubscriptionTier = item.ContainsKey("SubscriptionTier") ? item["SubscriptionTier"].S : "free"
         };
 
-        if (item.ContainsKey("CreatedAt"))
+        // Parse DateTime fields
+        if (item.ContainsKey("CreatedAt") && DateTime.TryParse(item["CreatedAt"].S, out var createdAt))
         {
-            if (DateOnly.TryParse(item["CreatedAt"].S, out var date))
-            {
-                user.CreatedAt = date;
-            }
+            user.CreatedAt = createdAt;
+        }
+        
+        if (item.ContainsKey("LastLogin") && DateTime.TryParse(item["LastLogin"].S, out var lastLogin))
+        {
+            user.LastLogin = lastLogin;
+        }
+        
+        if (item.ContainsKey("SubscriptionExpiry") && DateTime.TryParse(item["SubscriptionExpiry"].S, out var subscriptionExpiry))
+        {
+            user.SubscriptionExpiry = subscriptionExpiry;
         }
 
         return user;

@@ -1,0 +1,163 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0/linux-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {},
+    ".NETCoreApp,Version=v8.0/linux-x64": {
+      "ReviewSystemFunction/1.0.0": {
+        "dependencies": {
+          "Amazon.Lambda.APIGatewayEvents": "2.7.0",
+          "Amazon.Lambda.Core": "2.5.0",
+          "Amazon.Lambda.Serialization.SystemTextJson": "2.4.4",
+          "Common": "1.0.0",
+          "FluentValidation": "11.9.0"
+        },
+        "runtime": {
+          "ReviewSystemFunction.dll": {}
+        }
+      },
+      "Amazon.Lambda.APIGatewayEvents/2.7.0": {
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.APIGatewayEvents.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.2.0.0"
+          }
+        }
+      },
+      "Amazon.Lambda.Core/2.5.0": {
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Amazon.Lambda.Serialization.SystemTextJson/2.4.4": {
+        "dependencies": {
+          "Amazon.Lambda.Core": "2.5.0"
+        },
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Serialization.SystemTextJson.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.Core/3.7.300.11": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.300.11"
+          }
+        }
+      },
+      "AWSSDK.DynamoDBv2/3.7.300.11": {
+        "dependencies": {
+          "AWSSDK.Core": "3.7.300.11"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.DynamoDBv2.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.300.11"
+          }
+        }
+      },
+      "FluentValidation/11.9.0": {
+        "runtime": {
+          "lib/net8.0/FluentValidation.dll": {
+            "assemblyVersion": "11.0.0.0",
+            "fileVersion": "11.9.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.3": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.3.27908"
+          }
+        }
+      },
+      "Common/1.0.0": {
+        "dependencies": {
+          "AWSSDK.DynamoDBv2": "3.7.300.11",
+          "Amazon.Lambda.APIGatewayEvents": "2.7.0",
+          "Amazon.Lambda.Core": "2.5.0",
+          "Amazon.Lambda.Serialization.SystemTextJson": "2.4.4",
+          "FluentValidation": "11.9.0",
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "Common.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ReviewSystemFunction/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Amazon.Lambda.APIGatewayEvents/2.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HAbdRKLzvUqRg/fItan7up/PWsj6vQfYF+1a4YV6sv1bq5TuK/ra+ndJwWMlzL+MFJzJaHwCmtkyBbh/vz8Oig==",
+      "path": "amazon.lambda.apigatewayevents/2.7.0",
+      "hashPath": "amazon.lambda.apigatewayevents.2.7.0.nupkg.sha512"
+    },
+    "Amazon.Lambda.Core/2.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JrDdnjUPFcZ74VDjVc2kMucyUpjHnN77Al9Owc17DYYFYAVav46fLRl1BlJj0UPhJxTakoB/h1PhU/6J005Qrw==",
+      "path": "amazon.lambda.core/2.5.0",
+      "hashPath": "amazon.lambda.core.2.5.0.nupkg.sha512"
+    },
+    "Amazon.Lambda.Serialization.SystemTextJson/2.4.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iv/cvqFuZ3v3+NFDyof0IJZvU+4kdpzOe3pWSBwp9HB885I+D32WQxuid9V4GnvRynER9XnWMPaDmImX8qH5cA==",
+      "path": "amazon.lambda.serialization.systemtextjson/2.4.4",
+      "hashPath": "amazon.lambda.serialization.systemtextjson.2.4.4.nupkg.sha512"
+    },
+    "AWSSDK.Core/3.7.300.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-K2YXCpd/c9qgtB4RrjyuwA4QvbY8qCoBOG2oKpMukxqctODVItBUaRbULcG78utAMCalDiyTkoHztvu17ISJjA==",
+      "path": "awssdk.core/3.7.300.11",
+      "hashPath": "awssdk.core.3.7.300.11.nupkg.sha512"
+    },
+    "AWSSDK.DynamoDBv2/3.7.300.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-G8DJ/1LQvxqy7N8K1jNv4po3LAFvxvarGK2s83+8C4NmUiZGowvJj+9mOJDxAjA2VuAZELbZILmHsm7AtCC43A==",
+      "path": "awssdk.dynamodbv2/3.7.300.11",
+      "hashPath": "awssdk.dynamodbv2.3.7.300.11.nupkg.sha512"
+    },
+    "FluentValidation/11.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VneVlTvwYDkfHV5av3QrQ0amALgrLX6LV94wlYyEsh0B/klJBW7C8y2eAtj5tOZ3jH6CAVpr4s1ZGgew/QWyig==",
+      "path": "fluentvalidation/11.9.0",
+      "hashPath": "fluentvalidation.11.9.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "path": "newtonsoft.json/13.0.3",
+      "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
+    },
+    "Common/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

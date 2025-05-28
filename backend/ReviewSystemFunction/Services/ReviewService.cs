@@ -18,7 +18,7 @@ namespace ReviewSystemFunction.Services
         public ReviewService(IAmazonDynamoDB dynamoDbClient)
         {
             _dynamoDbClient = dynamoDbClient;
-            _atomsTableName = Environment.GetEnvironmentVariable("ATOMS_TABLE_NAME") ?? "NeuroBrain-Atoms";
+            _atomsTableName = Environment.GetEnvironmentVariable("ATOMS_TABLE_NAME") ?? "Atoms";
         }
 
         /// <summary>

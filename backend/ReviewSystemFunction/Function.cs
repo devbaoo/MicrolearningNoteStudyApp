@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Common.Responses; // For ApiResponse
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -18,21 +19,24 @@ namespace ReviewSystemFunction
         private readonly IAmazonDynamoDB _dynamoDbClient;
         private readonly IReviewService _reviewService;
         private readonly GetDueReviewsHandler _getDueReviewsHandler;
+        private readonly CalculateIntervalHandler _calculateIntervalHandler;
 
         /// <summary>
         /// Constructor that initializes the dependency chain:
-        /// DynamoDBClient -> ReviewService -> GetDueReviewsHandler
+        /// DynamoDBClient -> Services -> Handlers
         /// </summary>
         public Function()
         {
             // Initialize the DynamoDB client
             _dynamoDbClient = new AmazonDynamoDBClient();
             
-            // Initialize the ReviewService with the DynamoDB client
+            // Initialize the Services
             _reviewService = new ReviewService(_dynamoDbClient);
+            var superMemoService = new SuperMemoService();
             
-            // Initialize the GetDueReviewsHandler with the ReviewService
+            // Initialize the Handlers with their dependencies
             _getDueReviewsHandler = new GetDueReviewsHandler(_reviewService);
+            _calculateIntervalHandler = new CalculateIntervalHandler(_dynamoDbClient, superMemoService);
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
@@ -47,14 +51,20 @@ namespace ReviewSystemFunction
                 // Route based on HTTP method and path
                 return method switch
                 {
-                    /* ("GET", "/reviews/due") => await _getDueReviewsHandler.HandleAsync(request, context),
+                    "GET" when path == "/reviews/due" => await _getDueReviewsHandler.HandleAsync(request, context),
+                    "POST" when path == "/reviews/calculate_interval" => await _calculateIntervalHandler.HandleAsync(request, context),
 
-                    ("OPTIONS", _) => CreateCorsResponse(),*/
+                    "OPTIONS" => CreateCorsResponse(),
 
                     _ => new APIGatewayHttpApiV2ProxyResponse
                     {
                         StatusCode = 404,
-                        Body = JsonConvert.SerializeObject(new { message = "Endpoint not found" }),
+                        Body = JsonConvert.SerializeObject(new ApiResponse<object>
+                        {
+                            Success = false,
+                            Error = "Endpoint not found",
+                            Timestamp = DateTime.UtcNow
+                        }),
                         Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
                     }
                 };
@@ -71,9 +81,9 @@ namespace ReviewSystemFunction
             }
         }
 
-        private APIGatewayProxyResponse CreateCorsResponse()
+        private APIGatewayHttpApiV2ProxyResponse CreateCorsResponse()
         {
-            return new APIGatewayProxyResponse
+            return new APIGatewayHttpApiV2ProxyResponse
             {
                 StatusCode = 200,
                 Headers = new Dictionary<string, string>
@@ -86,14 +96,14 @@ namespace ReviewSystemFunction
             };
         }
 
-        private APIGatewayProxyResponse CreateNotFoundResponse()
+        private APIGatewayHttpApiV2ProxyResponse CreateNotFoundResponse()
         {
             return CreateErrorResponse(404, "Endpoint not found");
         }
 
-        private APIGatewayProxyResponse CreateErrorResponse(int statusCode, string message)
+        private APIGatewayHttpApiV2ProxyResponse CreateErrorResponse(int statusCode, string message)
         {
-            return new APIGatewayProxyResponse
+            return new APIGatewayHttpApiV2ProxyResponse
             {
                 StatusCode = statusCode,
                 Headers = new Dictionary<string, string>

@@ -15,15 +15,15 @@ namespace ReviewSystemFunction.Handlers
             _reviewService = reviewService;
         }
 
-        public async Task<APIGatewayHttpApiV2ProxyResponse> HandleAsync(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayHttpApiV2ProxyResponse> HandleAsync(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             context.Logger.LogInformation($"Starting GetDueReviews handler at {DateTime.UtcNow}");
 
             // Extract and validate parameters - Handler responsibility
             string? userId = null;
-            if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("user_id", out var userIdValue))
+            if (request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("user_id"))
             {
-                userId = userIdValue;
+                userId = request.QueryStringParameters["user_id"];
             }
 
             if (string.IsNullOrEmpty(userId))
@@ -41,9 +41,9 @@ namespace ReviewSystemFunction.Handlers
             }
 
             string limitStr = "50";
-            if (request.QueryStringParameters != null && request.QueryStringParameters.TryGetValue("limit", out var limitValue))
+            if (request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("limit"))
             {
-                limitStr = limitValue;
+                limitStr = request.QueryStringParameters["limit"];
             }
 
             if (!int.TryParse(limitStr, out var limit) || limit <= 0)

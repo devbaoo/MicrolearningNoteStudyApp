@@ -8,7 +8,7 @@ using Common.Models;
 using System.Net;
 using System.Collections.Generic;
 
-namespace UserManagementFunction.Tests;
+namespace UserProfileFunction.Tests;
 
 public class FunctionTests
 {
