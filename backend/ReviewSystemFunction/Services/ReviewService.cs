@@ -1,4 +1,4 @@
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.Core;
 using Common.Models;
@@ -58,44 +58,156 @@ namespace ReviewSystemFunction.Services
         public async Task<List<ReviewAtom>> GetDueAtomsAsync(string userId, int limit, ILambdaContext context)
         {
             var currentTime = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-            
+            context.Logger.LogLine($"Getting due atoms for user {userId}, current time: {currentTime}, limit: {limit}");
+
+            // Sử dụng UserReviewDateIndex thay vì UserIdIndex để tối ưu hóa query
             var request = new QueryRequest
             {
                 TableName = _atomsTableName,
-                IndexName = "UserIdIndex",
-                KeyConditionExpression = "user_id = :userId",
-                FilterExpression = "next_review_date <= :currentTime AND attribute_exists(next_review_date)",
+                IndexName = "UserReviewDateIndex", // Index tối ưu với sort key là next_review_date
+                KeyConditionExpression = "user_id = :userId AND next_review_date <= :currentTime",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     [":userId"] = new AttributeValue { S = userId },
                     [":currentTime"] = new AttributeValue { S = currentTime }
                 },
-                Limit = limit * 2,
-                ScanIndexForward = true
+                Limit = Math.Max(limit * 2, 50), // Đảm bảo limit tối thiểu
+                ScanIndexForward = true // Sắp xếp theo thứ tự tăng dần của next_review_date
             };
 
             var dueAtoms = new List<ReviewAtom>();
+            var maxIterations = 10; // Giới hạn số lần lặp để tránh vòng lặp vô tận
+            var iterationCount = 0;
+            var consecutiveEmptyResults = 0;
+
             QueryResponse response;
 
             do
             {
-                response = await _dynamoDbClient.QueryAsync(request);
-                
-                foreach (var item in response.Items)
+                iterationCount++;
+
+                // Kiểm tra giới hạn iterations
+                if (iterationCount > maxIterations)
                 {
-                    var atom = MapDynamoDbItemToReviewAtom(item);
-                    if (IsAtomDueForReview(atom.NextReviewDate))
-                    {
-                        dueAtoms.Add(atom);
-                        if (dueAtoms.Count >= limit)
-                            break;
-                    }
+                    context.Logger.LogLine($"Breaking loop after {maxIterations} iterations to prevent infinite loop");
+                    break;
                 }
 
-                request.ExclusiveStartKey = response.LastEvaluatedKey;
+                try
+                {
+                    response = await _dynamoDbClient.QueryAsync(request);
+
+                    context.Logger.LogLine($"Iteration {iterationCount}: Query returned {response.Items.Count} items, " +
+                                         $"LastEvaluatedKey: {(response.LastEvaluatedKey != null ? "present" : "null")}");
+
+                    // Kiểm tra nếu có kết quả trống liên tiếp
+                    if (response.Items.Count == 0)
+                    {
+                        consecutiveEmptyResults++;
+                        context.Logger.LogLine($"Empty result #{consecutiveEmptyResults}");
+
+                        // Nếu có quá nhiều kết quả trống liên tiếp, thoát vòng lặp
+                        if (consecutiveEmptyResults >= 3)
+                        {
+                            context.Logger.LogLine("Too many consecutive empty results, breaking loop");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        consecutiveEmptyResults = 0; // Reset counter khi có kết quả
+                    }
+
+                    // Xử lý các items trả về
+                    foreach (var item in response.Items)
+                    {
+                        try
+                        {
+                            var atom = MapDynamoDbItemToReviewAtom(item);
+
+                            // Double-check điều kiện due date (phòng trường hợp có sai lệch thời gian)
+                            if (DateTime.TryParse(atom.NextReviewDate, out var nextReviewDate))
+                            {
+                                if (nextReviewDate <= DateTime.UtcNow)
+                                {
+                                    dueAtoms.Add(atom);
+
+                                    if (dueAtoms.Count >= limit)
+                                    {
+                                        context.Logger.LogLine($"Reached target limit of {limit} atoms, breaking loop");
+                                        return dueAtoms.Take(limit).ToList();
+                                    }
+                                }
+                                else
+                                {
+                                    context.Logger.LogLine($"Atom {atom.AtomId} not due yet: {atom.NextReviewDate}");
+                                }
+                            }
+                            else
+                            {
+                                // Nếu không parse được date, vẫn add để tránh bỏ sót
+                                dueAtoms.Add(atom);
+                                context.Logger.LogLine($"Warning: Could not parse next_review_date for atom {atom.AtomId}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            context.Logger.LogLine($"Error mapping item to ReviewAtom: {ex.Message}");
+                            // Tiếp tục với item tiếp theo thay vì throw exception
+                        }
+                    }
+
+                    // Nếu đã đủ số lượng cần thiết, thoát vòng lặp
+                    if (dueAtoms.Count >= limit)
+                    {
+                        context.Logger.LogLine($"Collected enough atoms ({dueAtoms.Count}), breaking loop");
+                        break;
+                    }
+
+                    // Kiểm tra LastEvaluatedKey để quyết định có tiếp tục không
+                    if (response.LastEvaluatedKey != null)
+                    {
+                        // Log chi tiết LastEvaluatedKey để debug
+                        var lastKeyJson = System.Text.Json.JsonSerializer.Serialize(
+                            response.LastEvaluatedKey.ToDictionary(
+                                kvp => kvp.Key,
+                                kvp => kvp.Value.S ?? kvp.Value.N ?? kvp.Value.B?.ToString() ?? "unknown"
+                            )
+                        );
+                        context.Logger.LogLine($"Setting ExclusiveStartKey: {lastKeyJson}");
+
+                        request.ExclusiveStartKey = response.LastEvaluatedKey;
+                    }
+                    else
+                    {
+                        context.Logger.LogLine("No more items to fetch (LastEvaluatedKey is null)");
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    context.Logger.LogLine($"Error during DynamoDB query: {ex.Message}");
+                    throw; // Re-throw để caller có thể xử lý
+                }
+
             } while (response.LastEvaluatedKey != null && dueAtoms.Count < limit);
 
-            return dueAtoms;
+            context.Logger.LogLine($"Returning {dueAtoms.Count} due atoms after {iterationCount} iterations");
+
+            // Trả về đúng số lượng yêu cầu
+            return dueAtoms.Take(limit).ToList();
+        }
+
+        // Helper method để parse và validate date (optional)
+        private bool IsAtomDueForReview(string nextReviewDateString, DateTime currentTime)
+        {
+            if (DateTime.TryParse(nextReviewDateString, out var nextReviewDate))
+            {
+                return nextReviewDate <= currentTime;
+            }
+
+            // Nếu không parse được, coi như due để tránh bỏ sót
+            return true;
         }
 
         private ReviewAtom MapDynamoDbItemToReviewAtom(Dictionary<string, AttributeValue> item)
