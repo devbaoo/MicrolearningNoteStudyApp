@@ -14,6 +14,7 @@ using ReviewSystemFunction.Services;
 using Common.Requests;
 using System;
 using System.Linq;
+using Moq;
 
 namespace ReviewSystemFunction.Tests;
 
@@ -301,5 +302,61 @@ public class FunctionTests : IDisposable
         Assert.True(response.Headers.ContainsKey("Access-Control-Allow-Origin"));
         Assert.True(response.Headers.ContainsKey("Access-Control-Allow-Headers"));
         Assert.True(response.Headers.ContainsKey("Access-Control-Allow-Methods"));
+    }
+
+    [Fact]
+    public async Task StartReviewSession_WithValidRequest_ShouldReturn200()
+    {
+        // Arrange
+        // Create request with hardcoded data
+        var startRequest = new StartReviewSessionRequest
+        {
+            UserId = "user123",
+            SessionType = "regular",
+            MaxAtoms = 15,
+            TimeLimitMinutes = 25,
+            ShuffleOrder = true,
+            ShowHints = false
+        };
+        
+        var request = new APIGatewayHttpApiV2ProxyRequest
+        {
+            RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
+            {
+                Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
+                {
+                    Method = "POST",
+                    Path = "/reviews/sessions"
+                }
+            },
+            Body = JsonConvert.SerializeObject(startRequest)
+        };
+        
+        // Act
+        var response = await _function.FunctionHandler(request, _context);
+        
+        // Assert
+        Assert.Equal((int)HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Body);
+        
+        var apiResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(response.Body);
+        Assert.NotNull(apiResponse);
+        Assert.True(apiResponse.Success);
+        Assert.NotNull(apiResponse.Data);
+        
+        // Log the response for debugging
+        _context.Logger.LogLine($"Response: {response.Body}");
+        
+        // Verify the response contains expected data structure
+        var responseData = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(apiResponse.Data));
+        Assert.NotNull(responseData.SessionId);
+        Assert.NotNull(responseData.AtomsToReview);
+        Assert.NotNull(responseData.SessionSettings);
+        
+        // Verify the session settings match what we sent
+        Assert.Equal(startRequest.MaxAtoms, (int)responseData.SessionSettings.MaxAtoms);
+        Assert.Equal(startRequest.TimeLimitMinutes, (int)responseData.SessionSettings.TimeLimitMinutes);
+        Assert.Equal(startRequest.ShuffleOrder, (bool)responseData.SessionSettings.ShuffleOrder);
+        Assert.Equal(startRequest.ShowHints, (bool)responseData.SessionSettings.ShowHints);
     }
 }
