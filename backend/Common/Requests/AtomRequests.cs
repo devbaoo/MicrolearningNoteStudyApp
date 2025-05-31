@@ -67,4 +67,10 @@ public class AtomRequests
 
         public bool Archive { get; set; } = true;
     }
+
+    public class UpdateAtomTagsRequest
+    {
+        [Required]
+        public List<string> Tags { get; set; } = new List<string>();
+    }
 } 
