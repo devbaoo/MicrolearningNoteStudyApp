@@ -3,6 +3,7 @@ using Amazon.Lambda.Core;
 using Common.Responses;
 using Newtonsoft.Json;
 using ReviewSystemFunction.Services;
+using System.Text.Json;
 
 namespace ReviewSystemFunction.Handlers
 {
@@ -19,6 +20,13 @@ namespace ReviewSystemFunction.Handlers
         {
             context.Logger.LogInformation($"Starting GetDueReviews handler at {DateTime.UtcNow}");
 
+            var requestJson = System.Text.Json.JsonSerializer.Serialize(request, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            context.Logger.LogInformation($"Request GetDueReviews: {requestJson}");
+
+
             // Extract and validate parameters - Handler responsibility
             string? userId = null;
             if (request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("user_id"))
@@ -30,6 +38,7 @@ namespace ReviewSystemFunction.Handlers
             {
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
+                    //test
                     StatusCode = 400,
                     Body = JsonConvert.SerializeObject(new ApiResponse<GetDueReviewsResponse>
                     {
@@ -40,7 +49,8 @@ namespace ReviewSystemFunction.Handlers
                 };
             }
 
-            string limitStr = "50";
+            // Default to 5 atoms per day for optimal learning pace
+            string limitStr = "5";
             if (request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("limit"))
             {
                 limitStr = request.QueryStringParameters["limit"];
@@ -48,11 +58,11 @@ namespace ReviewSystemFunction.Handlers
 
             if (!int.TryParse(limitStr, out var limit) || limit <= 0)
             {
-                limit = 50;
+                limit = 5;
             }
 
-            // Ensure reasonable limit
-            limit = Math.Min(limit, 100);
+            // Ensure reasonable limit - default to 5 atoms per day, max 20
+            limit = Math.Min(limit, 20);
 
             context.Logger.LogInformation($"Getting due atoms for user: {userId}, limit: {limit}");
 

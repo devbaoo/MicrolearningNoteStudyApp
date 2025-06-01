@@ -64,15 +64,15 @@ namespace ReviewSystemFunction.Services
             var request = new QueryRequest
             {
                 TableName = _atomsTableName,
-                IndexName = "UserReviewDateIndex", // Index tối ưu với sort key là next_review_date
-                KeyConditionExpression = "user_id = :userId AND next_review_date <= :currentTime",
+                IndexName = "UserReviewDateIndex", // Index tối ưu với sort key là NextReviewDate
+                KeyConditionExpression = "UserId = :userId AND NextReviewDate <= :currentTime",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     [":userId"] = new AttributeValue { S = userId },
                     [":currentTime"] = new AttributeValue { S = currentTime }
                 },
                 Limit = Math.Max(limit * 2, 50), // Đảm bảo limit tối thiểu
-                ScanIndexForward = true // Sắp xếp theo thứ tự tăng dần của next_review_date
+                ScanIndexForward = true // Sắp xếp theo thứ tự tăng dần của NextReviewDate
             };
 
             var dueAtoms = new List<ReviewAtom>();
@@ -147,7 +147,7 @@ namespace ReviewSystemFunction.Services
                             {
                                 // Nếu không parse được date, vẫn add để tránh bỏ sót
                                 dueAtoms.Add(atom);
-                                context.Logger.LogLine($"Warning: Could not parse next_review_date for atom {atom.AtomId}");
+                                context.Logger.LogLine($"Warning: Could not parse NextReviewDate for atom {atom.AtomId}");
                             }
                         }
                         catch (Exception ex)
@@ -214,17 +214,17 @@ namespace ReviewSystemFunction.Services
         {
             return new ReviewAtom
             {
-                AtomId = item.TryGetValue("atom_id", out var atomId) ? atomId.S : null,
-                UserId = item.TryGetValue("user_id", out var userId) ? userId.S : null,
-                Content = item.TryGetValue("content", out var content) ? content.S : null,
-                CreatedAt = item.TryGetValue("created_at", out var createdAt) ? createdAt.S : null,
-                UpdatedAt = item.TryGetValue("updated_at", out var updatedAt) ? updatedAt.S : null,
-                NextReviewDate = item.TryGetValue("next_review_date", out var nextReviewDate) ? nextReviewDate.S : null,
-                LastReviewDate = item.TryGetValue("last_review_date", out var lastReviewDate) ? lastReviewDate.S : null,
-                ReviewCount = ParseInt(item.TryGetValue("review_count", out var reviewCount) ? reviewCount : null),
-                DifficultyScore = ParseDecimal(item.TryGetValue("difficulty_score", out var difficultyScore) ? difficultyScore : null),
-                ImportanceScore = ParseDecimal(item.TryGetValue("importance_score", out var importanceScore) ? importanceScore : null),
-                NoteId = item.TryGetValue("note_id", out var noteId) ? noteId.S : null
+                AtomId = item.TryGetValue("AtomId", out var atomId) ? atomId.S : null,
+                UserId = item.TryGetValue("UserId", out var userId) ? userId.S : null,
+                Content = item.TryGetValue("Content", out var content) ? content.S : null,
+                CreatedAt = item.TryGetValue("CreatedAt", out var createdAt) ? createdAt.S : null,
+                UpdatedAt = item.TryGetValue("UpdatedAt", out var updatedAt) ? updatedAt.S : null,
+                NextReviewDate = item.TryGetValue("NextReviewDate", out var nextReviewDate) ? nextReviewDate.S : null,
+                LastReviewDate = item.TryGetValue("LastReviewDate", out var lastReviewDate) ? lastReviewDate.S : null,
+                ReviewCount = ParseInt(item.TryGetValue("ReviewCount", out var reviewCount) ? reviewCount : null),
+                DifficultyScore = ParseDecimal(item.TryGetValue("DifficultyScore", out var difficultyScore) ? difficultyScore : null),
+                ImportanceScore = ParseDecimal(item.TryGetValue("ImportanceScore", out var importanceScore) ? importanceScore : null),
+                NoteId = item.TryGetValue("NoteId", out var noteId) ? noteId.S : null
             };
         }
 

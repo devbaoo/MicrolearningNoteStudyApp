@@ -118,16 +118,16 @@ namespace ReviewSystemFunction.Services
             // Store in DynamoDB
             var item = new Dictionary<string, AttributeValue>
             {
-                ["session_id"] = new AttributeValue { S = sessionId },
-                ["user_id"] = new AttributeValue { S = request.UserId },
-                ["session_type"] = new AttributeValue { S = session.SessionType },
-                ["status"] = new AttributeValue { S = "active" },
-                ["start_time"] = new AttributeValue { S = timestamp },
-                ["total_atoms"] = new AttributeValue { N = session.TotalAtoms.ToString() },
-                ["completed_atoms"] = new AttributeValue { N = "0" },
-                ["atoms_to_review"] = new AttributeValue { SS = session.AtomsToReview },
-                ["session_settings"] = new AttributeValue { S = JsonConvert.SerializeObject(session.SessionSettings) },
-                ["ttl"] = new AttributeValue { N = ((DateTimeOffset)DateTime.UtcNow.AddDays(7)).ToUnixTimeSeconds().ToString() }
+                ["SessionId"] = new AttributeValue { S = sessionId },
+                ["UserId"] = new AttributeValue { S = request.UserId },
+                ["SessionType"] = new AttributeValue { S = session.SessionType },
+                ["Status"] = new AttributeValue { S = "active" },
+                ["StartTime"] = new AttributeValue { S = timestamp },
+                ["TotalAtoms"] = new AttributeValue { N = session.TotalAtoms.ToString() },
+                ["CompletedAtoms"] = new AttributeValue { N = "0" },
+                ["AtomsToReview"] = new AttributeValue { SS = session.AtomsToReview },
+                ["SessionSettings"] = new AttributeValue { S = JsonConvert.SerializeObject(session.SessionSettings) },
+                ["TTL"] = new AttributeValue { N = ((DateTimeOffset)DateTime.UtcNow.AddDays(7)).ToUnixTimeSeconds().ToString() }
             };
 
             await _dynamoDbClient.PutItemAsync(new PutItemRequest
@@ -311,7 +311,7 @@ namespace ReviewSystemFunction.Services
                     TableName = _reviewSessionsTableName,
                     Key = new Dictionary<string, AttributeValue>
                     {
-                        ["session_id"] = new AttributeValue { S = sessionId }
+                        ["SessionId"] = new AttributeValue { S = sessionId }
                     }
                 });
 
@@ -320,17 +320,17 @@ namespace ReviewSystemFunction.Services
 
                 return new ReviewSession
                 {
-                    SessionId = response.Item.GetValueOrDefault("session_id")?.S,
-                    UserId = response.Item.GetValueOrDefault("user_id")?.S,
-                    SessionType = response.Item.GetValueOrDefault("session_type")?.S,
-                    Status = response.Item.GetValueOrDefault("status")?.S,
-                    StartTime = response.Item.GetValueOrDefault("start_time")?.S,
-                    EndTime = response.Item.GetValueOrDefault("end_time")?.S,
-                    TotalAtoms = ParseInt(response.Item.GetValueOrDefault("total_atoms")),
-                    CompletedAtoms = ParseInt(response.Item.GetValueOrDefault("completed_atoms")),
-                    AtomsToReview = response.Item.GetValueOrDefault("atoms_to_review")?.SS?.ToList() ?? new List<string>(),
+                    SessionId = response.Item.GetValueOrDefault("SessionId")?.S,
+                    UserId = response.Item.GetValueOrDefault("UserId")?.S,
+                    SessionType = response.Item.GetValueOrDefault("SessionType")?.S,
+                    Status = response.Item.GetValueOrDefault("Status")?.S,
+                    StartTime = response.Item.GetValueOrDefault("StartTime")?.S,
+                    EndTime = response.Item.GetValueOrDefault("EndTime")?.S,
+                    TotalAtoms = ParseInt(response.Item.GetValueOrDefault("TotalAtoms")),
+                    CompletedAtoms = ParseInt(response.Item.GetValueOrDefault("CompletedAtoms")),
+                    AtomsToReview = response.Item.GetValueOrDefault("AtomsToReview")?.SS?.ToList() ?? new List<string>(),
                     SessionSettings = JsonConvert.DeserializeObject<SessionSettings>(
-                        response.Item.GetValueOrDefault("session_settings")?.S ?? "{}")
+                        response.Item.GetValueOrDefault("SessionSettings")?.S ?? "{}")
                 };
             }
             catch (Exception ex)
@@ -349,7 +349,7 @@ namespace ReviewSystemFunction.Services
                     TableName = _atomsTableName,
                     Key = new Dictionary<string, AttributeValue>
                     {
-                        ["atom_id"] = new AttributeValue { S = atomId }
+                        ["AtomId"] = new AttributeValue { S = atomId }
                     }
                 });
 
@@ -358,21 +358,21 @@ namespace ReviewSystemFunction.Services
 
                 return new ReviewAtom
                 {
-                    AtomId = response.Item.GetValueOrDefault("atom_id")?.S,
-                    UserId = response.Item.GetValueOrDefault("user_id")?.S,
-                    Content = response.Item.GetValueOrDefault("content")?.S,
-                    Type = response.Item.GetValueOrDefault("type")?.S ?? "concept",
-                    ImportanceScore = ParseDecimal(response.Item.GetValueOrDefault("importance_score")),
-                    DifficultyScore = ParseDecimal(response.Item.GetValueOrDefault("difficulty_score")),
-                    CurrentInterval = ParseInt(response.Item.GetValueOrDefault("current_interval")),
-                    EaseFactor = ParseDecimal(response.Item.GetValueOrDefault("ease_factor")) ?? 2.5m,
-                    ReviewCount = ParseInt(response.Item.GetValueOrDefault("review_count")),
-                    LastReviewDate = response.Item.GetValueOrDefault("last_review_date")?.S,
-                    NextReviewDate = response.Item.GetValueOrDefault("next_review_date")?.S,
-                    Tags = response.Item.GetValueOrDefault("tags")?.SS?.ToList() ?? new List<string>(),
-                    CreatedAt = response.Item.GetValueOrDefault("created_at")?.S,
-                    UpdatedAt = response.Item.GetValueOrDefault("updated_at")?.S,
-                    NoteId = response.Item.GetValueOrDefault("note_id")?.S
+                    AtomId = response.Item.GetValueOrDefault("AtomId")?.S,
+                    UserId = response.Item.GetValueOrDefault("UserId")?.S,
+                    Content = response.Item.GetValueOrDefault("Content")?.S,
+                    Type = response.Item.GetValueOrDefault("Type")?.S ?? "concept",
+                    ImportanceScore = ParseDecimal(response.Item.GetValueOrDefault("ImportanceScore")),
+                    DifficultyScore = ParseDecimal(response.Item.GetValueOrDefault("DifficultyScore")),
+                    CurrentInterval = ParseInt(response.Item.GetValueOrDefault("CurrentInterval")),
+                    EaseFactor = ParseDecimal(response.Item.GetValueOrDefault("EaseFactor")) ?? 2.5m,
+                    ReviewCount = ParseInt(response.Item.GetValueOrDefault("ReviewCount")),
+                    LastReviewDate = response.Item.GetValueOrDefault("LastReviewDate")?.S,
+                    NextReviewDate = response.Item.GetValueOrDefault("NextReviewDate")?.S,
+                    Tags = response.Item.GetValueOrDefault("Tags")?.SS?.ToList() ?? new List<string>(),
+                    CreatedAt = response.Item.GetValueOrDefault("CreatedAt")?.S,
+                    UpdatedAt = response.Item.GetValueOrDefault("UpdatedAt")?.S,
+                    NoteId = response.Item.GetValueOrDefault("NoteId")?.S
                 };
             }
             catch (Exception ex)
@@ -393,22 +393,22 @@ namespace ReviewSystemFunction.Services
 
             var item = new Dictionary<string, AttributeValue>
             {
-                ["response_id"] = new AttributeValue { S = responseId },
-                ["session_id"] = new AttributeValue { S = sessionId },
-                ["atom_id"] = new AttributeValue { S = request.AtomId },
-                ["timestamp"] = new AttributeValue { S = timestamp },
-                ["success_rating"] = new AttributeValue { N = request.ResponseData.SuccessRating.ToString(CultureInfo.InvariantCulture) },
-                ["response_time_ms"] = new AttributeValue { N = request.ResponseData.ResponseTimeMs.ToString() },
-                ["confidence_level"] = new AttributeValue { N = (request.ResponseData.ConfidenceLevel ?? 0.5).ToString(CultureInfo.InvariantCulture) },
-                ["difficulty_perceived"] = new AttributeValue { N = (request.ResponseData.DifficultyPerceived ?? 0.5).ToString(CultureInfo.InvariantCulture) },
-                ["review_method"] = new AttributeValue { S = request.ResponseData.ReviewMethod ?? "standard" },
-                ["notes"] = new AttributeValue { S = request.ResponseData.Notes ?? "" },
-                ["calculated_interval"] = new AttributeValue { N = intervalResult.NewIntervalDays.ToString() },
-                ["calculated_ease_factor"] = new AttributeValue { N = intervalResult.EaseFactor.ToString(CultureInfo.InvariantCulture) },
-                ["performance_category"] = new AttributeValue { S = intervalResult.PerformanceCategory },
-                ["retention_probability"] = new AttributeValue { N = intervalResult.RetentionProbability.ToString(CultureInfo.InvariantCulture) },
-                ["algorithm_version"] = new AttributeValue { S = intervalResult.AlgorithmVersion },
-                ["ttl"] = new AttributeValue { N = ((DateTimeOffset)DateTime.UtcNow.AddDays(90)).ToUnixTimeSeconds().ToString() }
+                ["ResponseId"] = new AttributeValue { S = responseId },
+                ["SessionId"] = new AttributeValue { S = sessionId },
+                ["AtomId"] = new AttributeValue { S = request.AtomId },
+                ["Timestamp"] = new AttributeValue { S = timestamp },
+                ["SuccessRating"] = new AttributeValue { N = request.ResponseData.SuccessRating.ToString(CultureInfo.InvariantCulture) },
+                ["ResponseTimeMs"] = new AttributeValue { N = request.ResponseData.ResponseTimeMs.ToString() },
+                ["ConfidenceLevel"] = new AttributeValue { N = (request.ResponseData.ConfidenceLevel ?? 0.5).ToString(CultureInfo.InvariantCulture) },
+                ["DifficultyPerceived"] = new AttributeValue { N = (request.ResponseData.DifficultyPerceived ?? 0.5).ToString(CultureInfo.InvariantCulture) },
+                ["ReviewMethod"] = new AttributeValue { S = request.ResponseData.ReviewMethod ?? "standard" },
+                ["Notes"] = new AttributeValue { S = request.ResponseData.Notes ?? "" },
+                ["CalculatedInterval"] = new AttributeValue { N = intervalResult.NewIntervalDays.ToString() },
+                ["CalculatedEaseFactor"] = new AttributeValue { N = intervalResult.EaseFactor.ToString(CultureInfo.InvariantCulture) },
+                ["PerformanceCategory"] = new AttributeValue { S = intervalResult.PerformanceCategory },
+                ["RetentionProbability"] = new AttributeValue { N = intervalResult.RetentionProbability.ToString(CultureInfo.InvariantCulture) },
+                ["AlgorithmVersion"] = new AttributeValue { S = intervalResult.AlgorithmVersion },
+                ["TTL"] = new AttributeValue { N = ((DateTimeOffset)DateTime.UtcNow.AddDays(90)).ToUnixTimeSeconds().ToString() }
             };
 
             await _dynamoDbClient.PutItemAsync(new PutItemRequest
@@ -422,9 +422,9 @@ namespace ReviewSystemFunction.Services
 
         public async Task UpdateAtomSchedulingAsync(string atomId, CalculateIntervalResponse intervalResult, ILambdaContext context)
         {
-            var updateExpression = "SET current_interval = :interval, ease_factor = :ease, next_review_date = :next_date, " +
-                                 "review_count = review_count + :inc, last_review_date = :last_date, " +
-                                 "difficulty_score = :difficulty, updated_at = :updated_at";
+            var updateExpression = "SET CurrentInterval = :interval, EaseFactor = :ease, NextReviewDate = :next_date, " +
+                                 "ReviewCount = ReviewCount + :inc, LastReviewDate = :last_date, " +
+                                 "DifficultyScore = :difficulty, UpdatedAt = :updated_at";
 
             var expressionValues = new Dictionary<string, AttributeValue>
             {
@@ -442,7 +442,7 @@ namespace ReviewSystemFunction.Services
                 TableName = _atomsTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
-                    ["atom_id"] = new AttributeValue { S = atomId }
+                    ["AtomId"] = new AttributeValue { S = atomId }
                 },
                 UpdateExpression = updateExpression,
                 ExpressionAttributeValues = expressionValues
@@ -451,8 +451,8 @@ namespace ReviewSystemFunction.Services
 
         public async Task<ReviewSession> UpdateSessionProgressAsync(string sessionId, string atomId, ILambdaContext context)
         {
-            var updateExpression = "ADD completed_atoms :inc SET updated_at = :updated_at";
-            
+            var updateExpression = "ADD CompletedAtoms :inc SET UpdatedAt = :updated_at";
+
             var expressionValues = new Dictionary<string, AttributeValue>
             {
                 [":inc"] = new AttributeValue { N = "1" },
@@ -464,7 +464,7 @@ namespace ReviewSystemFunction.Services
                 TableName = _reviewSessionsTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
-                    ["session_id"] = new AttributeValue { S = sessionId }
+                    ["SessionId"] = new AttributeValue { S = sessionId }
                 },
                 UpdateExpression = updateExpression,
                 ExpressionAttributeValues = expressionValues
@@ -475,9 +475,9 @@ namespace ReviewSystemFunction.Services
 
         public async Task UpdateSessionStatusAsync(string sessionId, string status, ILambdaContext context)
         {
-            var updateExpression = "SET #status = :status, end_time = :end_time, updated_at = :updated_at";
+            var updateExpression = "SET #status = :status, EndTime = :end_time, UpdatedAt = :updated_at";
             var timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-            
+
             var expressionValues = new Dictionary<string, AttributeValue>
             {
                 [":status"] = new AttributeValue { S = status },
@@ -487,7 +487,7 @@ namespace ReviewSystemFunction.Services
 
             var expressionNames = new Dictionary<string, string>
             {
-                ["#status"] = "status"
+                ["#status"] = "Status"
             };
 
             await _dynamoDbClient.UpdateItemAsync(new UpdateItemRequest
@@ -495,7 +495,7 @@ namespace ReviewSystemFunction.Services
                 TableName = _reviewSessionsTableName,
                 Key = new Dictionary<string, AttributeValue>
                 {
-                    ["session_id"] = new AttributeValue { S = sessionId }
+                    ["SessionId"] = new AttributeValue { S = sessionId }
                 },
                 UpdateExpression = updateExpression,
                 ExpressionAttributeValues = expressionValues,
@@ -511,7 +511,7 @@ namespace ReviewSystemFunction.Services
                 {
                     TableName = _reviewResponsesTableName,
                     IndexName = "SessionResponsesIndex",
-                    KeyConditionExpression = "session_id = :sessionId",
+                    KeyConditionExpression = "SessionId = :sessionId",
                     ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                     {
                         [":sessionId"] = new AttributeValue { S = sessionId }
@@ -526,9 +526,9 @@ namespace ReviewSystemFunction.Services
                     return new SessionStatistics();
                 }
 
-                var successRatings = responses.Select(r => double.Parse(r.GetValueOrDefault("success_rating")?.N ?? "0")).ToList();
-                var responseTimes = responses.Select(r => int.Parse(r.GetValueOrDefault("response_time_ms")?.N ?? "0")).ToList();
-                var performanceCategories = responses.Select(r => r.GetValueOrDefault("performance_category")?.S ?? "").ToList();
+                var successRatings = responses.Select(r => double.Parse(r.GetValueOrDefault("SuccessRating")?.N ?? "0")).ToList();
+                var responseTimes = responses.Select(r => int.Parse(r.GetValueOrDefault("ResponseTimeMs")?.N ?? "0")).ToList();
+                var performanceCategories = responses.Select(r => r.GetValueOrDefault("PerformanceCategory")?.S ?? "").ToList();
 
                 return new SessionStatistics
                 {

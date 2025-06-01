@@ -16,6 +16,19 @@ namespace Common.Responses
         public string SubscriptionTier { get; set; }
         public DateTime SubscriptionExpiry { get; set; }
         public string FullName => $"{FirstName} {LastName}";
+        
+        // UserProfile information
+        public UserProfileResponse Profile { get; set; }
+    }
+
+    public class UserProfileResponse
+    {
+        public string UserId { get; set; }
+        public string Avatar { get; set; }
+        public string Timezone { get; set; }
+        public string Language { get; set; }
+        public string Bio { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 
     public class UserListResponse

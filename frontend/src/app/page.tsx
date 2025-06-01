@@ -16,7 +16,7 @@ export default function LandingPage() {
   useEffect(() => {
     setIsVisible(true)
   }, [])
-
+//test
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
       <Navigation setIsLogin={setIsLogin} />

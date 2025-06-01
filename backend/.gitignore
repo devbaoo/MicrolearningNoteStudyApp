@@ -5,7 +5,6 @@ out/
 
 # Visual Studio files
 .vs/
-*.sln
 *.user
 *.userosscache
 *.suo
