@@ -316,7 +316,7 @@ export default function AddNoteScreen() {
             Add specific examples to increase knowledge density.
           </ThemedText>
           <ThemedText style={styles.aiText}>
-            Consider linking this note to "Economic Principles: Inflation".
+            Consider linking this note to &apos;Economic Principles: Inflation&apos;.
           </ThemedText>
         </ThemedView>
       </ScrollView>

@@ -169,7 +169,7 @@ export default function LoginScreen() {
         
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: textColor }]}>
-            Don't have an account?
+            Don&apos;t have an account?
           </Text>
           <TouchableOpacity onPress={navigateToRegister}>
             <Text style={[styles.signUpText, { color: tintColor }]}>

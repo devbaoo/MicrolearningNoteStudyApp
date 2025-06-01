@@ -25,13 +25,13 @@ export function ReviewCard({ atoms, onStartReview, onAtomPress }: ReviewCardProp
   return (
     <ThemedView style={styles.card}>
       <View style={styles.cardHeader}>
-        <ThemedText type="subtitle">Today's Review</ThemedText>
+        <ThemedText type="subtitle">Today&apos;s Review</ThemedText>
         <ThemedText style={styles.count}>{atoms.length} atoms</ThemedText>
       </View>
       
       {atoms.length === 0 ? (
         <ThemedText style={styles.emptyText}>
-          Great job! You've completed all your reviews for today.
+          Great job! You&apos;ve completed all your reviews for today.
         </ThemedText>
       ) : (
         <>

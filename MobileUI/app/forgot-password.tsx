@@ -146,7 +146,7 @@ export default function ForgotPasswordScreen() {
             </Text>
             
             <Text style={[styles.successMessage, { color: textColor }]}>
-              We've sent a password reset link to:
+              We&apos;ve sent a password reset link to:
             </Text>
             
             <Text style={[styles.emailText, { color: textColor }]}>
@@ -171,7 +171,7 @@ export default function ForgotPasswordScreen() {
               onPress={handleResetPassword}
             >
               <Text style={[styles.resendText, { color: tintColor }]}>
-                Didn't receive the email? Resend
+                Didn&apos;t receive the email? Resend
               </Text>
             </TouchableOpacity>
           </View>

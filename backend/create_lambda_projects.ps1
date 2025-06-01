@@ -1,6 +1,5 @@
 $lambdaProjects = @(
     "AuthenticationFunction",
-    "UserManagementFunction",
     "NoteManagementFunction",
     "AtomManagementFunction",
     "KnowledgeGraphFunction",

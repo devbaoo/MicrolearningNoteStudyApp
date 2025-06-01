@@ -48,11 +48,10 @@ namespace NeuroBrain.AtomManagementFunction.Services
                 request.Page,
                 request.PageSize,
                 request.SortBy,
-                request.SortOrder,
-                request.IncludeArchived
+                request.SortOrder
             );
 
-            var totalCount = await _atomRepository.GetCountAsync(userId, request.IncludeArchived);
+            var totalCount = await _atomRepository.GetCountAsync(userId);
 
             return new AtomListResponse
             {
