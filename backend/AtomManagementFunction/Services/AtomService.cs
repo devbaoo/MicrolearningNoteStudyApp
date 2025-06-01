@@ -133,19 +133,6 @@ namespace NeuroBrain.AtomManagementFunction.Services
             return allTags.Take(count).ToList();
         }
 
-        public async Task<AtomResponse?> UpdateAtomTagsAsync(string atomId, UpdateAtomTagsRequest request, string userId)
-        {
-            var existingAtom = await _atomRepository.GetByIdAsync(atomId, userId);
-            if (existingAtom == null)
-                return null;
-
-            existingAtom.Tags = request.Tags.ToHashSet();
-            existingAtom.UpdatedAt = DateTime.Now;
-
-            var updatedAtom = await _atomRepository.UpdateAsync(existingAtom);
-            return MapToResponse(updatedAtom);
-        }
-
         private AtomResponse MapToResponse(Atom atom)
         {
             return new AtomResponse
