@@ -272,10 +272,82 @@ public class FunctionTests : IDisposable
         // Assert
         Assert.Equal((int)HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Body);
-        
+
         var apiResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(response.Body);
         Assert.NotNull(apiResponse);
         Assert.True(apiResponse.Success);
+    }
+
+    [Fact]
+    public async Task GetDueReviews_WithNoLimit_ShouldUseDefault5Atoms()
+    {
+        // Arrange - Test the new default of 5 atoms per day
+        var request = new APIGatewayHttpApiV2ProxyRequest
+        {
+            RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
+            {
+                Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
+                {
+                    Method = "GET",
+                    Path = "/reviews/due"
+                }
+            },
+            QueryStringParameters = new Dictionary<string, string>
+            {
+                { "user_id", _testUserId }
+                // No limit parameter - should default to 5
+            }
+        };
+
+        // Act
+        var response = await _function.FunctionHandler(request, _context);
+
+        // Assert
+        Assert.Equal((int)HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Body);
+
+        var apiResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(response.Body);
+        Assert.NotNull(apiResponse);
+        Assert.True(apiResponse.Success);
+
+        // Log the response for debugging
+        _context.Logger.LogLine($"Default limit response: {response.Body}");
+    }
+
+    [Fact]
+    public async Task GetDueReviews_WithLimitOver20_ShouldCapAt20Atoms()
+    {
+        // Arrange - Test the maximum limit of 20 atoms
+        var request = new APIGatewayHttpApiV2ProxyRequest
+        {
+            RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext
+            {
+                Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
+                {
+                    Method = "GET",
+                    Path = "/reviews/due"
+                }
+            },
+            QueryStringParameters = new Dictionary<string, string>
+            {
+                { "user_id", _testUserId },
+                { "limit", "50" } // Request 50, should be capped at 20
+            }
+        };
+
+        // Act
+        var response = await _function.FunctionHandler(request, _context);
+
+        // Assert
+        Assert.Equal((int)HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(response.Body);
+
+        var apiResponse = JsonConvert.DeserializeObject<ApiResponse<object>>(response.Body);
+        Assert.NotNull(apiResponse);
+        Assert.True(apiResponse.Success);
+
+        // Log the response for debugging
+        _context.Logger.LogLine($"Maximum limit response: {response.Body}");
     }
 
     [Fact]

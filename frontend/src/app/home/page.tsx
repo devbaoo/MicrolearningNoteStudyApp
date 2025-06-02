@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Mock data - in real app this would come from API/database
+  //test
   const todayReviewAtoms = [
     {
       id: 1,
@@ -86,7 +87,7 @@ export default function Dashboard() {
   ]
 
   const stats = {
-    knowledgeHealth: 87,
+    knowledgeHealth: 88,
     totalAtoms: 234,
     reviewStreak: 12,
     weeklyProgress: 85

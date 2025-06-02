@@ -22,6 +22,21 @@ namespace Common.Requests
         public string SubscriptionTier { get; set; } = "free";
         
         public DateTime? SubscriptionExpiry { get; set; }
+        
+        // UserProfile data
+        public CreateUserProfileRequest Profile { get; set; }
+    }
+
+    public class CreateUserProfileRequest
+    {
+        public string Avatar { get; set; }
+        
+        public string Timezone { get; set; } = "UTC";
+        
+        public string Language { get; set; } = "en";
+        
+        [StringLength(500)]
+        public string Bio { get; set; }
     }
 
     public class UpdateUserRequest
@@ -42,6 +57,21 @@ namespace Common.Requests
         public DateTime? SubscriptionExpiry { get; set; }
         
         public DateTime? LastLogin { get; set; }
+        
+        // UserProfile data
+        public UpdateUserProfileRequest Profile { get; set; }
+    }
+
+    public class UpdateUserProfileRequest
+    {
+        public string Avatar { get; set; }
+        
+        public string Timezone { get; set; }
+        
+        public string Language { get; set; }
+        
+        [StringLength(500)]
+        public string Bio { get; set; }
     }
 
     public class GetUsersRequest

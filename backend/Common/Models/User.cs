@@ -13,4 +13,7 @@ public class User
     public bool IsVerified { get; set; } = false;
     public string SubscriptionTier { get; set; } = "free";
     public DateTime SubscriptionExpiry { get; set; } = DateTime.UtcNow.AddYears(100);
+    
+    // Reference to UserProfile
+    public UserProfile Profile { get; set; }
 } 
