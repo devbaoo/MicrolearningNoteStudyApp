@@ -74,7 +74,7 @@ public class AtomRepository : IAtomRepository
         var request = new QueryRequest
         {
             TableName = _tableName,
-            IndexName = "userId-createdAt-index",
+            // IndexName = "userId-createdAt-index",
             KeyConditionExpression = "UserId = :userId",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
@@ -154,7 +154,7 @@ public class AtomRepository : IAtomRepository
         var request = new QueryRequest
         {
             TableName = _tableName,
-            IndexName = "userId-createdAt-index",
+            // IndexName = "userId-createdAt-index",
             KeyConditionExpression = "UserId = :userId",
             FilterExpression = "contains(Tags, :tag)",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -214,8 +214,8 @@ public class AtomRepository : IAtomRepository
             Content = item["Content"].S,
             Type = item["Type"].S,
             Tags = item.ContainsKey("Tags") ? item["Tags"].SS.ToHashSet() : new HashSet<string>(),
-            CreatedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(item["CreatedAt"].N)).DateTime,
-            UpdatedAt = item.ContainsKey("UpdatedAt") ? DateTimeOffset.FromUnixTimeSeconds(long.Parse(item["UpdatedAt"].N)).DateTime : (DateTime?)null,
+            CreatedAt = TryGetUnixDateTime(item, "CreatedAt") ?? DateTime.MinValue,
+            UpdatedAt = TryGetUnixDateTime(item, "UpdatedAt") ?? DateTime.MinValue,
             NextReviewDate = item["NextReviewDate"].S,
             LastReviewDate = item["LastReviewDate"].S,
             ImportanceScore = item.ContainsKey("ImportanceScore") ? decimal.Parse(item["ImportanceScore"].N) : null,
@@ -224,5 +224,15 @@ public class AtomRepository : IAtomRepository
             CurrentInterval = item.ContainsKey("CurrentInterval") ? int.Parse(item["CurrentInterval"].N) : 1,
             ReviewCount = item.ContainsKey("ReviewCount") ? int.Parse(item["ReviewCount"].N) : 0
         };
+    }
+
+    private DateTime? TryGetUnixDateTime(Dictionary<string, AttributeValue> item, string key)
+    {
+        if (item.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value.N) && long.TryParse(value.N, out var unixTime))
+        {
+            return DateTimeOffset.FromUnixTimeSeconds(unixTime).DateTime;
+        }
+
+        return null;
     }
 }

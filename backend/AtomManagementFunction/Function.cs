@@ -5,6 +5,7 @@ using NeuroBrain.AtomManagementFunction.Services;
 using Amazon.DynamoDBv2;
 using NeuroBrain.AtomManagementFunction.Handlers;
 using Newtonsoft.Json;
+using Amazon;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -18,7 +19,10 @@ namespace AtomManagementFunction
 
         public Function()
         {
-            var dynamoDb = new AmazonDynamoDBClient();
+            var dynamoDb = new AmazonDynamoDBClient(new AmazonDynamoDBConfig
+            {
+                RegionEndpoint = RegionEndpoint.APSoutheast1
+            });
             _atomRepository = new AtomRepository(dynamoDb);
             _atomService = new AtomService(_atomRepository);
         }
@@ -50,6 +54,7 @@ namespace AtomManagementFunction
             catch (Exception ex)
             {
                 context.Logger.LogError($"Error: {ex.Message}");
+                context.Logger.LogError($"StackTrace: {ex.StackTrace}");
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
                     StatusCode = 500,
