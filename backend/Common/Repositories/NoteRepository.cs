@@ -84,7 +84,7 @@ namespace NeuroBrain.Common.Repositories
             var request = new QueryRequest
             {
                 TableName = _tableName,
-                IndexName = "userId-createdAt-index",
+                IndexName = "UserId-CreatedAt-index",
                 KeyConditionExpression = "UserId = :userId",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -169,7 +169,7 @@ namespace NeuroBrain.Common.Repositories
             var request = new QueryRequest
             {
                 TableName = _tableName,
-                IndexName = "userId-createdAt-index",
+                IndexName = "UserId-CreatedAt-index",
                 KeyConditionExpression = "UserId = :userId",
                 FilterExpression = "contains(Tags, :tag)",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>

@@ -10,6 +10,7 @@ This project contains serverless AWS Lambda functions for the Microlearning Note
 ## Project Structure
 - **Common**: Shared models, interfaces, and repositories used across all Lambda functions
 - **AuthenticationFunction**: User authentication and account management
+- **UserManagementFunction**: User profile and settings management
 - **NoteManagementFunction**: Note creation, updating, and management
 - **AtomManagementFunction**: Atom (microlearning unit) management
 - **KnowledgeGraphFunction**: Knowledge graph generation and analysis

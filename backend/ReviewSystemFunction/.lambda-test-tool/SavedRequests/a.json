@@ -1,0 +1,48 @@
+{
+    "Version": "2.0",
+    "RouteKey": "GET /reviews/due",
+    "RawPath": "/reviews/due",
+    "RawQueryString": "user_id=user-123",
+    "Cookies": null,
+    "Headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br",
+        "cache-control": "no-cache",
+        "content-length": "0",
+        "host": "2s042tnyea.execute-api.ap-southeast-1.amazonaws.com",
+        "postman-token": "566c3084-dd29-4cfd-b1e4-7d7de6444c9e",
+        "user-agent": "PostmanRuntime/7.44.0",
+        "x-amzn-trace-id": "Root=1-683c69e1-3bfaaca92a5a8e866262eb75",
+        "x-forwarded-for": "104.28.222.73",
+        "x-forwarded-port": "443",
+        "x-forwarded-proto": "https"
+    },
+    "QueryStringParameters": {
+        "user_id": "user-123"
+    },
+    "RequestContext": {
+        "AccountId": "078944522241",
+        "ApiId": "2s042tnyea",
+        "Authorizer": null,
+        "DomainName": "2s042tnyea.execute-api.ap-southeast-1.amazonaws.com",
+        "DomainPrefix": "2s042tnyea",
+        "Http": {
+            "Method": "GET",
+            "Path": "/reviews/due",
+            "Protocol": "HTTP/1.1",
+            "SourceIp": "104.28.222.73",
+            "UserAgent": "PostmanRuntime/7.44.0"
+        },
+        "RequestId": "LfV7VgTtyQ0EJzA=",
+        "RouteId": null,
+        "RouteKey": "GET /reviews/due",
+        "Stage": "$default",
+        "Time": "01/Jun/2025:14:55:29 +0000",
+        "TimeEpoch": 1748789729757,
+        "Authentication": null
+    },
+    "Body": null,
+    "PathParameters": null,
+    "IsBase64Encoded": false,
+    "StageVariables": null
+}

@@ -3,7 +3,7 @@ using Common.Repositories;
 using static Common.Requests.AtomRequests;
 using static Common.Responses.AtomResponses;
 
-namespace AtomManagementFunction.Services
+namespace NeuroBrain.AtomManagementFunction.Services
 {
     public class AtomService
     {
@@ -48,10 +48,11 @@ namespace AtomManagementFunction.Services
                 request.Page,
                 request.PageSize,
                 request.SortBy,
-                request.SortOrder
+                request.SortOrder,
+                request.IncludeArchived
             );
 
-            var totalCount = await _atomRepository.GetCountAsync(userId);
+            var totalCount = await _atomRepository.GetCountAsync(userId, request.IncludeArchived);
 
             return new AtomListResponse
             {

@@ -35,7 +35,7 @@ public class AtomRequests
         public string? LastReviewDate { get; set; }
         public decimal? ImportanceScore { get; set; } = 0.5m;
         public decimal? DifficultyScore { get; set; } = 0.5m;
-        public HashSet<string> Tags { get; set; } = new HashSet<string>();
+        public List<string> Tags { get; set; }
     }
 
     public class GetAtomsRequest

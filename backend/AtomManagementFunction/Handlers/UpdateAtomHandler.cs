@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Newtonsoft.Json;
+using NeuroBrain.Common.Requests;
+using NeuroBrain.Common.Responses;
 using Common.Responses;
-using AtomManagementFunction.Services;
+using NeuroBrain.AtomManagementFunction.Services;
 using static Common.Requests.AtomRequests;
 using static Common.Responses.AtomResponses;
 
-namespace AtomManagementFunction.Handlers
+namespace NeuroBrain.AtomManagementFunction.Handlers
 {
     public class UpdateAtomHandler
     {
@@ -33,17 +35,6 @@ namespace AtomManagementFunction.Handlers
             }
 
             var updateRequest = JsonConvert.DeserializeObject<UpdateAtomRequest>(request.Body);
-
-            if (updateRequest == null)
-            {
-                return new APIGatewayHttpApiV2ProxyResponse
-                {
-                    StatusCode = 400,
-                    Body = JsonConvert.SerializeObject(new { message = "Request is empty" }),
-                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-                };
-            }
-
             updateRequest.AtomId = atomId;
 
             var atom = await _atomService.UpdateAtomAsync(updateRequest, userId);

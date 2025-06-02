@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Newtonsoft.Json;
+using NeuroBrain.Common.Responses;
 using Common.Responses;
-using AtomManagementFunction.Services;
+using NeuroBrain.AtomManagementFunction.Services;
 using static Common.Responses.AtomResponses;
 
-namespace AtomManagementFunction.Handlers
+namespace NeuroBrain.AtomManagementFunction.Handlers
 {
     public class GetAtomByIdHandler
     {

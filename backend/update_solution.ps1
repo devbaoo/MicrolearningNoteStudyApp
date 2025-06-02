@@ -1,6 +1,7 @@
 $projects = @(
     "Common",
     "AuthenticationFunction",
+    "UserManagementFunction",
     "NoteManagementFunction",
     "AtomManagementFunction",
     "KnowledgeGraphFunction",
@@ -10,6 +11,7 @@ $projects = @(
     "IntegrationFunction",
     "NotificationFunction",
     "AuthenticationFunction.Tests",
+    "UserManagementFunction.Tests",
     "NoteManagementFunction.Tests",
     "AtomManagementFunction.Tests",
     "KnowledgeGraphFunction.Tests",

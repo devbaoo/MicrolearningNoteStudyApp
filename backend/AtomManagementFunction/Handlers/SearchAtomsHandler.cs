@@ -1,11 +1,13 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Common.Responses;
-using AtomManagementFunction.Services;
+using NeuroBrain.AtomManagementFunction.Services;
+using NeuroBrain.Common.Requests;
+using NeuroBrain.Common.Responses;
 using Newtonsoft.Json;
 using static Common.Requests.AtomRequests;
 using static Common.Responses.AtomResponses;
 
-namespace AtomManagementFunction.Handlers
+namespace NeuroBrain.AtomManagementFunction.Handlers
 {
     public class SearchAtomsHandler
     {
