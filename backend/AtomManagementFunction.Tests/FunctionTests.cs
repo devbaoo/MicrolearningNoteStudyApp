@@ -21,8 +21,8 @@ public class FunctionTests
             {
                 Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription
                 {
-                    Method = "GET",
-                    Path = "/atoms/17065c63-90eb-4933-a874-1f120a6f454b"
+                    Method = "DELETE",
+                    Path = "/atoms/f11fe493-84e5-446c-9fa9-34663bd79564"
                 }
             },
             Headers = new Dictionary<string, string>

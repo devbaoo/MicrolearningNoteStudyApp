@@ -3,7 +3,7 @@ using Common.Repositories;
 using static Common.Requests.AtomRequests;
 using static Common.Responses.AtomResponses;
 
-namespace NeuroBrain.AtomManagementFunction.Services
+namespace AtomManagementFunction.Services
 {
     public class AtomService
     {

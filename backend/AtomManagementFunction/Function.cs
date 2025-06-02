@@ -1,11 +1,11 @@
 ﻿using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using Common.Repositories;
-using NeuroBrain.AtomManagementFunction.Services;
 using Amazon.DynamoDBv2;
-using NeuroBrain.AtomManagementFunction.Handlers;
 using Newtonsoft.Json;
 using Amazon;
+using AtomManagementFunction.Services;
+using AtomManagementFunction.Handlers;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -43,6 +43,7 @@ namespace AtomManagementFunction
                     "DELETE" when path.Contains("/atoms/") => await new DeleteAtomHandler(_atomService).HandleAsync(request, userId),
                     "GET" when path.EndsWith("/atoms/search") => await new SearchAtomsHandler(_atomService).HandleAsync(request, userId),
                     "GET" when path.EndsWith("/atoms/tags") => await new GetAtomTagsHandler(_atomService).HandleAsync(request, userId),
+                    "PUT" when path.Contains("/atoms/")  => await new UpdateAtomHandler(_atomService).HandleAsync(request, userId),
                     _ => new APIGatewayHttpApiV2ProxyResponse
                     {
                         StatusCode = 404,

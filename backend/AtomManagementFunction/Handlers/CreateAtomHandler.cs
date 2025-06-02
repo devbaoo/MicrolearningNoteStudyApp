@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Newtonsoft.Json;
-using NeuroBrain.Common.Requests;
-using NeuroBrain.Common.Responses;
 using Common.Responses;
-using NeuroBrain.AtomManagementFunction.Services;
+using AtomManagementFunction.Services;
 using static Common.Responses.AtomResponses;
 using static Common.Requests.AtomRequests;
 
-namespace NeuroBrain.AtomManagementFunction.Handlers
+namespace AtomManagementFunction.Handlers
 {
     public class CreateAtomHandler
     {

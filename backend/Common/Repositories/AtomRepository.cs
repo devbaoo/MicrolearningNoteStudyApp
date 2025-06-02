@@ -27,9 +27,15 @@ public class AtomRepository : IAtomRepository
             ["UserId"] = new AttributeValue { S = atom.UserId },
             ["Content"] = new AttributeValue { S = atom.Content },
             ["Type"] = new AttributeValue { S = atom.Type ?? "concept" },
-            ["Tags"] = new AttributeValue { SS = atom.Tags?.ToList() ?? new List<string>() },
-            ["CreatedAt"] = new AttributeValue { N = ((DateTimeOffset)atom.CreatedAt).ToUnixTimeSeconds().ToString() },
-            ["UpdatedAt"] = new AttributeValue { N = ((DateTimeOffset)(atom.UpdatedAt ?? DateTime.UtcNow)).ToUnixTimeSeconds().ToString() },
+            ["Tags"] = new AttributeValue
+            {
+                L = atom.Tags?.Select(tag => new AttributeValue { S = tag }).ToList()
+            },
+            ["CreatedAt"] = new AttributeValue { S = atom.CreatedAt.ToString("o") },
+            ["UpdatedAt"] = new AttributeValue
+            {
+                S = (atom.UpdatedAt ?? DateTime.UtcNow).ToString("o")
+            },
             ["NextReviewDate"] = new AttributeValue { S = atom.NextReviewDate ?? "" },
             ["LastReviewDate"] = new AttributeValue { S = atom.LastReviewDate ?? "" },
             ["ImportanceScore"] = new AttributeValue { N = (atom.ImportanceScore ?? 0.5m).ToString() },
@@ -99,13 +105,17 @@ public class AtomRepository : IAtomRepository
                 ["AtomId"] = new AttributeValue { S = atom.AtomId },
                 ["UserId"] = new AttributeValue { S = atom.UserId }
             },
-            UpdateExpression = "SET Content = :content, Type = :type, Tags = :tags, UpdatedAt = :updatedAt, NextReviewDate = :nextReviewDate, LastReviewDate = :lastReviewDate, ImportanceScore = :importanceScore, DifficultyScore = :difficultyScore, EaseFactor = :easeFactor, CurrentInterval = :currentInterval, ReviewCount = :reviewCount",
+            UpdateExpression = "SET Content = :content, #type = :type, Tags = :tags, UpdatedAt = :updatedAt, NextReviewDate = :nextReviewDate, LastReviewDate = :lastReviewDate, ImportanceScore = :importanceScore, DifficultyScore = :difficultyScore, EaseFactor = :easeFactor, CurrentInterval = :currentInterval, ReviewCount = :reviewCount",
+            ExpressionAttributeNames = new Dictionary<string, string>
+            {
+                ["#type"] = "Type"
+            },
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 [":content"] = new AttributeValue { S = atom.Content },
                 [":type"] = new AttributeValue { S = atom.Type ?? "concept" },
-                [":tags"] = new AttributeValue { SS = atom.Tags?.ToList() ?? new List<string>() },
-                [":updatedAt"] = new AttributeValue { N = ((DateTimeOffset)(atom.UpdatedAt ?? DateTime.UtcNow)).ToUnixTimeSeconds().ToString() },
+                [":tags"] = new AttributeValue { L = atom.Tags?.Select(tag => new AttributeValue { S = tag }).ToList() },
+                [":updatedAt"] = new AttributeValue { S = (atom.UpdatedAt ?? DateTime.UtcNow).ToString("o") },
                 [":nextReviewDate"] = new AttributeValue { S = atom.NextReviewDate ?? "" },
                 [":lastReviewDate"] = new AttributeValue { S = atom.LastReviewDate ?? "" },
                 [":importanceScore"] = new AttributeValue { N = (atom.ImportanceScore ?? 0.5m).ToString() },
